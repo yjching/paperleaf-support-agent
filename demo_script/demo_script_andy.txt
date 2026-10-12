@@ -1,0 +1,32 @@
+# Demo script — replay with:  python3 agent.py --script demo_script/demo_script_andy.txt
+# Scenario 2 of 3: the full return journey. Three orders on this account,
+# two of them containing books — that ambiguity forces the clarifying
+# question before anything else can happen. Once eligibility is confirmed,
+# the reason routes what gets offered: search_policy is a live call here,
+# not prompt prose, so the damaged-item remedy the agent offers is grounded,
+# not memorized. See demo_script.txt for the plain order-status scenario,
+# demo_script_morgan.txt for the refusal.
+
+# 1. Identity resolves to three orders, each named by title (not just SKU/ID
+#    — andy doesn't remember those). "My book" is ambiguous — two delivered
+#    orders both contain one — so the agent has to ask which, rather than
+#    guess.
+Hi, my email is andy@example.com. I want to return my book
+
+# 2. Slot filled -> deterministic eligibility. The reason question comes
+#    next regardless of the answer — eligibility never depended on it.
+The Pragmatic Programmer one
+
+# 3. The reason routes the offer. search_policy is called here for the
+#    damaged/misprinted policy — the agent doesn't already know it, it
+#    looks it up. Damaged items need no return shipment either way: a free
+#    replacement or a refund, customer's choice.
+It arrived damaged
+I'll take the free replacement please
+
+# 4. Confirming the replacement means confirming the shipping address, not a
+#    generic "shall I proceed" — the same yes covers both. create_replacement
+#    creates an actual new order (andy could ask "where's my order" about it
+#    afterward), and the agent closes with that order's reference, not a
+#    receipt-style summary.
+Yes, that address is right

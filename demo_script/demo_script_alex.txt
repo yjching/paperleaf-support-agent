@@ -1,0 +1,23 @@
+# Demo script — replay with:  python3 agent.py --script demo_script/demo_script_alex.txt
+# Scenario 1 of 3: the standard changed-mind return, fee deducted. Andy's
+# demo is the damaged/no-fee branch, morgan's is a refusal — this is the
+# third shape of the same tool, and the only one where the customer just
+# doesn't want the book anymore. Two delivered orders both contain a book,
+# so the same clarifying question andy's account forces comes up here too.
+
+# 1. Order status first. One order in transit (Project Hail Mary) — a
+#    simple read, resolves the customer.
+Hi, where's my order? My email is alex@example.com
+
+# 2. The clarifying question. Two delivered orders both contain books — The
+#    Hobbit and a downloaded 1984 ebook — so the agent has to ask which one
+#    rather than guess.
+I want to return my book
+
+# 3. Slot filled -> deterministic eligibility (in window, 6 days) -> reason
+#    -> confirm -> write. The reason is asked before confirmation, and it's
+#    what routes the fee: changed_mind carries the standard $6.99 AusPost
+#    fee, deducted from the refund, unlike andy's damaged item.
+The Hobbit
+I changed my mind, I don't want it anymore
+Yes, go ahead

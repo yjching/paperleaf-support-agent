@@ -1,0 +1,25 @@
+# Demo script — replay with:  python3 agent.py --script demo_script/demo_script_morgan.txt
+# Scenario 3 of 3: the refusal, and what the agent does with it. Two orders
+# on this account — one still in transit, one delivered 31 days ago, one day
+# past the 30-day window. The engine says no on the delivered one and the
+# agent doesn't negotiate; the only lever it has is a human handoff, and it
+# only uses it once the customer pushes back or asks outright. This is the
+# design pillar on camera: the model never overrides the policy, but a
+# customer this close to the line is exactly who should reach a person.
+
+# 1. Order status first. Two orders on the account, only one delivered — the
+#    agent has to tell them apart, but there's still only one book the
+#    return request in beat 2 could mean.
+Hi, my email is morgan@example.com. Where are my orders at?
+
+# 2. Eligibility comes back false. The agent states the reason plainly (31
+#    days, one day over) and doesn't hedge or imply it might reconsider.
+I want to return the Clean Code hardcover
+
+# 3. The customer pushes back. The agent still won't bend the rule itself —
+#    but this is the cue to offer a human who can look at the exception.
+That's ridiculous, it's one day. Can you make an exception?
+
+# 4. Customer accepts the offer (or could ask outright instead) -> agent
+#    actually calls transfer_to_human and reports the queue position.
+Yes, please get me a person

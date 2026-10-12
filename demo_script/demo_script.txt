@@ -1,0 +1,14 @@
+# Demo script — replay with:  python3 agent.py --script demo_script/demo_script.txt
+# Scenario 1 of 3: pure order status. No identity given up front, so the
+# agent has to ask for it before it can look anything up — then a plain
+# lookup, nothing else. See demo_script_andy.txt for the full return
+# journey, demo_script_morgan.txt for the refusal + escalation scenario.
+
+# 1. No identifying info yet — the agent can't call get_order without an
+#    order ID or an email, so it has to ask rather than guess or stall.
+Hi, where's my order?
+
+# 2. Identity resolves the lookup. Three orders come back — Project Hail
+#    Mary in transit is the one with anything to report; the other two are
+#    just account history, untouched by this script.
+My email is alex@example.com

@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paperleaf Support</title>
+<style>
+  :root {
+    --bg: #faf9f7; --panel: #ffffff; --ink: #1c1b19; --muted: #6b6862;
+    --line: #e5e2dc; --accent: #2c5c8f; --accent-soft: #e9f0f7;
+    --warn: #9a3412; --warn-soft: #fdf0e8;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    margin: 0; font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif; color: var(--ink); background: var(--bg);
+    display: flex; flex-direction: column;
+  }
+  header {
+    padding: 14px 20px; border-bottom: 1px solid var(--line);
+    background: var(--panel); display: flex; align-items: center; gap: 14px;
+    flex-shrink: 0;
+  }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+  header .sub { color: var(--muted); font-size: 13px; }
+  header .spacer { flex: 1; }
+  button {
+    font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 6px;
+    border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover:not(:disabled) { border-color: #cfcac1; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: .5; cursor: default; }
+
+  .wrap { display: grid; grid-template-columns: 1fr 380px; flex: 1; min-height: 0; }
+  @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; } aside { display: none; } }
+
+  main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+  #log { flex: 1; overflow-y: auto; padding: 22px 20px; }
+  .turn { max-width: 660px; margin: 0 auto 16px; display: flex; }
+  .turn.user { justify-content: flex-end; }
+  .bubble {
+    padding: 10px 14px; border-radius: 12px; white-space: pre-wrap;
+    background: var(--panel); border: 1px solid var(--line); max-width: 78%;
+  }
+  .turn.user .bubble { background: var(--accent-soft); border-color: #cddced; }
+  .who { font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+         color: var(--muted); margin-bottom: 4px; }
+
+  form { border-top: 1px solid var(--line); background: var(--panel);
+         padding: 12px 20px; display: flex; gap: 10px; }
+  form input {
+    flex: 1; font: inherit; padding: 10px 12px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+  }
+  form input:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+
+  aside { border-left: 1px solid var(--line); background: var(--panel);
+          overflow-y: auto; padding: 16px; }
+  aside h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em;
+             color: var(--muted); margin: 0 0 10px; font-weight: 600; }
+  .ev { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px;
+        margin-bottom: 8px; font-size: 12.5px; }
+  .ev .name { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+              color: var(--accent); font-weight: 600; }
+  .ev pre { margin: 6px 0 0; white-space: pre-wrap; word-break: break-word;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 11.5px; color: var(--muted); max-height: 160px; overflow: auto; }
+  .ev.err { border-color: #f0c9b4; background: var(--warn-soft); }
+  .ev.err .name { color: var(--warn); }
+  .ev.flag { border-color: #f0c9b4; background: var(--warn-soft); color: var(--warn);
+             font-weight: 600; }
+  .empty { color: var(--muted); font-size: 13px; }
+  .typing { color: var(--muted); font-style: italic; }
+  .welcome { max-width: 660px; margin: 8px auto 22px; padding: 16px 18px;
+             border: 1px solid var(--line); border-radius: 12px;
+             background: var(--panel); }
+  .welcome h3 { margin: 0 0 6px; font-size: 15px; }
+  .welcome p { margin: 0 0 10px; color: var(--muted); font-size: 13.5px; }
+  .welcome ul { margin: 0; padding-left: 18px; color: var(--ink); font-size: 14px; }
+  .welcome li { margin-bottom: 3px; }
+  .welcome .hint { margin: 10px 0 0; font-size: 12.5px; color: var(--muted); }
+  .handoff { max-width: 660px; margin: 0 auto 16px; padding: 12px 14px;
+             border: 1px solid #cbb994; background: #fdf8ec; border-radius: 10px;
+             font-size: 14px; }
+  .handoff strong { display: block; margin-bottom: 3px; }
+  .handoff .meta { color: var(--muted); font-size: 12.5px; margin-top: 4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Paperleaf Support</h1>
+  <span class="sub">agent demo</span>
+  <span class="spacer"></span>
+  <button id="reset">Reset</button>
+</header>
+
+<div class="wrap">
+  <main>
+    <div id="log"></div>
+    <form id="form" autocomplete="off">
+      <input id="input" placeholder="Ask about an order, a return, or a policy…" autofocus>
+      <button class="primary" id="send">Send</button>
+    </form>
+  </main>
+  <aside>
+    <h2>What the agent did</h2>
+    <div id="events"><p class="empty">Tool calls, results, and blocked actions appear here.</p></div>
+  </aside>
+</div>
+
+<script>
+const log = document.getElementById('log');
+const events = document.getElementById('events');
+const form = document.getElementById('form');
+const input = document.getElementById('input');
+const sendBtn = document.getElementById('send');
+const resetBtn = document.getElementById('reset');
+let busy = false;
+
+const WELCOME = `
+  <div class="welcome">
+    <h3>Hi — I'm the Paperleaf support agent.</h3>
+    <p>I can help you with these things:</p>
+    <ul>
+      <li><b>Order status</b> — where your order is and when it should arrive</li>
+      <li><b>Returns and refunds</b> — check if something can be returned, and process it</li>
+      <li><b>Policies</b> — shipping, refund timing, payments, and account questions</li>
+    </ul>
+    <p class="hint">To get started, ask me about anything I can help with,
+    along with your email or an order number.</p>
+  </div>`;
+
+function showWelcome() {
+  log.insertAdjacentHTML('beforeend', WELCOME);
+}
+
+function showHandoff(events) {
+  const res = events.find(e => e.type === 'tool_result' && e.name === 'transfer_to_human');
+  let info = {};
+  try { info = JSON.parse(res.content); } catch (e) {}
+  const d = document.createElement('div');
+  d.className = 'handoff';
+  const pos = info.queue_position, size = info.queue_size;
+  const posText = (pos && size) ? ('number ' + pos + ' out of ' + size) : 'in the queue';
+  d.innerHTML = '<strong>In the queue for a human agent</strong>' +
+    'You\'re ' + posText + '.' +
+    (info.handoff_id ? '<div class="meta">Ref ' + info.handoff_id + '</div>' : '');
+  log.append(d);
+  log.scrollTop = log.scrollHeight;
+  input.placeholder = 'Waiting in queue (' + posText + ')…';
+}
+
+function bubble(who, text, cls) {
+  const turn = document.createElement('div');
+  turn.className = 'turn ' + cls;
+  const b = document.createElement('div');
+  b.className = 'bubble';
+  const p = document.createElement('div');
+  p.textContent = text;
+  if (who) {
+    const w = document.createElement('div');
+    w.className = 'who';
+    w.textContent = who;
+    b.append(w);
+  }
+  b.append(p);
+  turn.append(b);
+  log.append(turn);
+  log.scrollTop = log.scrollHeight;
+  return p;
+}
+
+function addEvents(list) {
+  if (!list.length) return;
+  if (events.querySelector('.empty')) events.innerHTML = '';
+  for (const e of list) {
+    const d = document.createElement('div');
+    if (e.type === 'tool_call') {
+      d.className = 'ev';
+      d.innerHTML = '<span class="name"></span>';
+      d.querySelector('.name').textContent = e.name + '()';
+      const pre = document.createElement('pre');
+      pre.textContent = JSON.stringify(e.args, null, 2);
+      d.append(pre);
+    } else if (e.type === 'tool_result') {
+      d.className = 'ev' + (e.is_error ? ' err' : '');
+      d.innerHTML = '<span class="name"></span>';
+      d.querySelector('.name').textContent = (e.is_error ? '✕ ' : '→ ') + e.name;
+      const pre = document.createElement('pre');
+      pre.textContent = e.content;
+      d.append(pre);
+    } else if (e.type === 'misalignment') {
+      d.className = 'ev flag';
+      d.textContent = '⚑ guardrail blocked the agent — logged as "' + e.rule + '"';
+    }
+    events.append(d);
+  }
+  events.scrollTop = events.scrollHeight;
+}
+
+async function send(text) {
+  if (busy) return;
+  busy = true; sendBtn.disabled = true;
+  bubble('', text, 'user');
+  const pending = bubble('agent', 'Thinking...', 'agent');
+  pending.className = 'typing';
+  try {
+    const res = await fetch('/api/message', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({text})
+    });
+    const data = await res.json();
+    pending.className = '';
+    if (data.error) {
+      pending.textContent = 'Error: ' + data.error;
+    } else {
+      pending.textContent = data.reply;
+      addEvents(data.events || []);
+      if ((data.events || []).some(e => e.type === 'tool_call' && e.name === 'transfer_to_human')) {
+        showHandoff(data.events);
+      }
+    }
+  } catch (err) {
+    pending.className = '';
+    pending.textContent = 'Request failed: ' + err;
+  } finally {
+    busy = false; sendBtn.disabled = false;
+    log.scrollTop = log.scrollHeight;
+  }
+}
+
+form.addEventListener('submit', ev => {
+  ev.preventDefault();
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  send(text);
+});
+
+resetBtn.addEventListener('click', async () => {
+  await fetch('/api/reset', {method: 'POST'});
+  log.innerHTML = '';
+  showWelcome();
+  input.placeholder = 'Ask about an order, a return, or a policy…';
+  events.innerHTML = '<p class="empty">Tool calls, results, and blocked actions appear here.</p>';
+  input.focus();
+});
+showWelcome();
+</script>
+</body>
+</html>
